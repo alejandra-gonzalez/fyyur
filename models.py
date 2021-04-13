@@ -18,6 +18,13 @@ class Venue(db.Model):
     website = db.Column(db.String(120))
     genres = db.Column(db.String(120))
 
+    def __repr__(self):
+        return f"<id:{self.id} name: {self.name} genres: {self.genres} \
+        city: {self.city} state: {self.state} address: {self.address} \
+        phone: {self.phone} image_link: {self.image_link} \
+        facebook_link: {self.facebook_link} seeking_talent: {self.seeking_talent} \
+        seeking_description: {self.seeking_description} website: {self.website}>"
+
 class Artist(db.Model):
     __tablename__ = 'artists'
 
