@@ -101,7 +101,7 @@ def search_venues():
 
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
-  venue = Venue.query.first_or_404(venue_id)
+  venue = Venue.query.get_or_404(venue_id)
   genre_str = (venue.genres).replace('{', '')
   genre_str = genre_str.replace('}', '')
   genre = list(genre_str.split(","))
@@ -136,24 +136,25 @@ def create_venue_form():
 
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
+  form = VenueForm(request.form)
   error = False
   try: 
-    name = request.form.get("name")
-    city = request.form.get("city")
-    state = request.form.get("state")
-    address = request.form.get("address")
-    phone = request.form.get("phone")
-    genres = request.form.getlist("genres")
-    facebook_link = request.form.get("facebook_link")
-    image_link = request.form.get("image_link")
-    website = request.form.get("website_link")
-    if request.form.get("seeking_talent") == 'y':
-      seeking_talent = True
-    else:
-      seeking_talent = False
-    seeking_description = request.form.get("seeking_description")
-
-    venue = Venue(name=name, city=city, state=state, address=address, phone=phone, genres=genres, facebook_link=facebook_link, image_link=image_link, website=website, seeking_talent=seeking_talent, seeking_description=seeking_description)
+    seeking_talent=False
+    if (form.seeking_talent.data=='y'):
+        seeking_talent=True
+    venue = Venue(
+      name=form.name.data,
+      city=form.city.data,
+      state=form.state.data,
+      address=form.address.data,
+      phone=form.phone.data,
+      genres=form.genres.data,
+      facebook_link=form.facebook_link.data,
+      image_link=form.image_link.data,
+      website=form.website_link.data,
+      seeking_description=form.seeking_description.data,
+      seeking_talent=seeking_talent
+    )
     db.session.add(venue)
     db.session.commit()
 
@@ -220,7 +221,7 @@ def search_artists():
 
 @app.route('/artists/<int:artist_id>')
 def show_artist(artist_id):
-  artist = Artist.query.first_or_404(artist_id)
+  artist = Artist.query.get_or_404(artist_id)
   genre_str = (artist.genres).replace('{', '')
   genre_str = genre_str.replace('}', '')
   genre = list(genre_str.split(","))
@@ -361,22 +362,24 @@ def create_artist_form():
 
 @app.route('/artists/create', methods=['POST'])
 def create_artist_submission():
+  form = ArtistForm(request.form)
   error = False
   try: 
-    name = request.form.get("name")
-    city = request.form.get("city")
-    state = request.form.get("state")
-    phone = request.form.get("phone")
-    genres = request.form.getlist("genres")
-    facebook_link = request.form.get("facebook_link")
-    image_link = request.form.get("image_link")
-    website = request.form.get("website_link")
-    if request.form.get("seeking_venue") == 'y':
+    seeking_venue = False
+    if form.seeking_venue.data=='y':
       seeking_venue = True
-    else:
-      seeking_venue = False
-    seeking_description = request.form.get("seeking_description")
-    artist = Artist(name=name, city=city, state=state, phone=phone, genres=genres, facebook_link=facebook_link, image_link=image_link, website=website, seeking_venue=seeking_venue, seeking_description=seeking_description)
+    artist = Artist(
+      name=form.name.data,
+      city=form.name.data,
+      state=form.state.data,
+      phone=form.phone.data,
+      genres=form.genres.data,
+      facebook_link=form.facebook_link.data,
+      image_link=form.image_link.data,
+      website=form.website_link.data,
+      seeking_description=form.seeking_description.data,
+      seeking_venue=seeking_venue
+    )
     db.session.add(artist)
     db.session.commit()
   except:
@@ -422,13 +425,14 @@ def create_shows():
 
 @app.route('/shows/create', methods=['POST'])
 def create_show_submission():
+  form = ShowForm(request.form)
   error = False
   try: 
-    artist_id = request.form.get("artist_id")
-    venue_id = request.form.get("venue_id")
-    start_time = request.form.get("start_time")
-
-    show = Show(artist_id=artist_id, venue_id=venue_id, start_time=start_time)
+    show = Show(
+      artist_id=form.artist_id.data,
+      venue_id=form.venue_id.data,
+      start_time=form.start_time.data
+    )
     db.session.add(show)
     db.session.commit()
   except:
